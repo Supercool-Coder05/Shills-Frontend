@@ -1,6 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Botlist = () => {
+  const navigate = useNavigate()
+  
+  const handleNext = (e) => {
+    e.preventDefault();
+    navigate("/dashboard");
+  };
+
   const bots = [
     { id: 1, name: "SKOR Bot" },
     { id: 2, name: "ADPOD" },
@@ -41,7 +49,9 @@ const Botlist = () => {
               </h3>
 
               {/* Action Button */}
-              <button className="px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-white hover:text-black border border-black transition">
+              <button
+              onClick={handleNext}
+              className="px-4 py-2 text-sm bg-black text-white rounded-md hover:bg-white hover:text-black border border-black transition">
                 Activate
               </button>
             </div>
