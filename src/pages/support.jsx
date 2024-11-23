@@ -1,5 +1,8 @@
+import axios from "axios";
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Support = () => {
   const navigate = useNavigate();
@@ -18,6 +21,84 @@ const Support = () => {
     }
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!selectedFile) {
+      toast.error("Please upload a file before submitting.");
+      return;
+    }
+
+    const username = event.target.username.value.trim();
+    const message = event.target.message.value.trim();
+    if (!username || !message) {
+      toast.error("Please fill out all fields before submitting.");
+      return;
+    }
+
+const token = localStorage.getItem("authToken");
+
+console.log("Retrieved Token:", token);
+
+if (!token) {
+  toast.error("You are not authenticated. Please log in first.");
+  return;
+} else {
+  toast.success("Authentication successful! Token is present.");
+}
+
+    console.log("Token being used:", token);
+
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("message", message);
+    formData.append("image", selectedFile);
+
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+
+    try {
+      const response = await axios.post(
+        "http://54.146.185.76:8000/api/users/contact/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("API Response:", response.data);
+      toast.success("Your message has been submitted!");
+
+      event.target.reset();
+      if (fileInputRef.current) {
+        fileInputRef.current.value = null;
+      }
+      setSelectedFile(null);
+    } catch (error) {
+      if (error.response) {
+        console.error("Error Response:", error.response.data);
+        if (error.response.status === 401) {
+          toast.error("Authentication failed. Please log in again.");
+        } else {
+          const errorMessage =
+            error.response.data?.detail ||
+            error.response.data?.message ||
+            "An error occurred.";
+          toast.error(errorMessage);
+        }
+      } else {
+        toast.error("Network error or server is unreachable.");
+      }
+      console.error("Error submitting form:", error);
+    }
+  };
+  
+  
+
   const handleUploadClick = () => {
     fileInputRef.current && fileInputRef.current.click();
   };
@@ -31,6 +112,7 @@ const Support = () => {
 
   return (
     <div className="relative flex flex-col h-screen bg-gray-50 overflow-hidden">
+      <ToastContainer />
       {/* Wavy Image */}
       <img
         src="/wavy.svg"
@@ -73,11 +155,12 @@ const Support = () => {
             <h2 className="text-lg sm:text-2xl text-center font-['Glancyr Neue'] text-gray-800 mb-4">
               Contact Us
             </h2>
-            <form className="space-y-6 sm:space-y-8">
+            <form className="space-y-6 sm:space-y-8" onSubmit={handleSubmit}>
               {/* Username */}
               <div className="flex flex-col">
                 <input
                   type="text"
+                  name="username"
                   placeholder="Username"
                   className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -85,6 +168,7 @@ const Support = () => {
 
               {/* Message */}
               <textarea
+                name="message"
                 rows="4"
                 placeholder="Write your message..."
                 className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
