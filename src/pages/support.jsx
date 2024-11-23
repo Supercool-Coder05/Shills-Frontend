@@ -36,7 +36,7 @@ const Support = () => {
       return;
     }
 
-const token = localStorage.getItem("authToken");
+const token ="b1723688be5b2abe00911c15dc95cef27e59634a"
 
 console.log("Retrieved Token:", token);
 
@@ -51,8 +51,8 @@ if (!token) {
 
     const formData = new FormData();
     formData.append("username", username);
-    formData.append("message", message);
-    formData.append("image", selectedFile);
+    formData.append("query", message);
+    formData.append("file_upload", selectedFile);
 
     for (const [key, value] of formData.entries()) {
       console.log(`${key}:`, value);
@@ -60,11 +60,11 @@ if (!token) {
 
     try {
       const response = await axios.post(
-        "http://54.146.185.76:8000/api/users/contact/",
+        "http://54.146.185.76:8000/api/users/contact",
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }

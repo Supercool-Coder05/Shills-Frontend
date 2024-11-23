@@ -54,32 +54,36 @@ const Consult = () => {
 
   const handleConsult = async (e) => {
     e.preventDefault();
-
+  
+    console.log("Form submission initiated...");
+  
     if (!formData.companyName || !formData.aboutCompany || !formData.helpMessage) {
+      console.error("Validation Error: Missing required fields.");
       toast.error("Please fill out all required fields.");
       return;
     }
-
+  
     if (!formData.productDoc) {
+      console.error("Validation Error: Missing product document.");
       toast.error("Please upload a product document.");
       return;
     }
-
+  
     const apiFormData = new FormData();
     apiFormData.append("companyName", formData.companyName);
     apiFormData.append("aboutCompany", formData.aboutCompany);
     apiFormData.append("productDoc", formData.productDoc);
     apiFormData.append("helpMessage", formData.helpMessage);
-
-    apiFormData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
-
+  
+    console.log("Form data ready for submission:");
+    apiFormData.forEach((value, key) => console.log(`${key}:`, value));
+  
+  
     try {
       console.log("Sending API Request...");
-
+  
       const response = await axios.post(
-        "http://54.146.185.76:8000/api/users/explore/",
+        "http://54.146.185.76:8000/api/users/explore",
         apiFormData,
         {
           headers: {
@@ -87,11 +91,12 @@ const Consult = () => {
           },
         }
       );
-
-      console.log("API Response:", response.data);
-
+  
+      console.log("API Response received:", response);
+  
       if (response.status === 200) {
-        toast.success("Form submitted successfully!");
+        console.log("Success: Form submitted successfully!");
+        toast.success("Form submitted successfully!", 200);
         navigate("/");
       } else {
         console.error("Unexpected API Response:", response);
@@ -99,16 +104,24 @@ const Consult = () => {
       }
     } catch (error) {
       console.error("Error during API call:", error);
-
+  
       if (error.response) {
-        console.error("Server Error Response:", error.response.data);
-        toast.error(error.response.data?.message || "An error occurred.");
+        if (error.response.status === 401) {
+          console.error("Authentication Error: Unauthorized token.");
+          toast.error("Authentication failed. Please check your token.");
+        } else {
+          console.error("Server Error Response:", error.response.data);
+          toast.error(error.response.data?.message || "An error occurred.");
+        }
       } else {
+        console.error("Network Error: Unable to reach server.");
         toast.error("Network error or server is unreachable.");
       }
     }
   };
-
+  
+  
+  
   return (
     <div className="relative h-screen w-screen bg-gray-50 flex flex-col overflow-hidden">
       {/* Toast Container */}

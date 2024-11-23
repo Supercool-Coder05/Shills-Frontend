@@ -72,7 +72,7 @@ const Login = () => {
         }}
         className="hiddden sm:flex flex-col w-full md:w-1/2 justify-center items-center text-white"
       >
-        <div className="flex flex-row items-center justify-center gap-6 hidden sm:flex">
+        <div className="flex flex-row items-center justify-center -mb-10 gap-6 hidden sm:flex">
           <img
             src="/shillsbotlogo.svg"
             alt="Shills Bot Logo"
@@ -80,8 +80,8 @@ const Login = () => {
           />
           <h1 className="text-3xl font-bold hidden sm:flex">Shills Bot</h1>
         </div>
-        <div className="hidden sm:flex items-center justify-center h-1/2 mt-12 sm:mt-0">
-  <img src="/Robot.svg" alt="Shills Bot Robot" className="w-64" />
+        <div className="hidden sm:flex items-center justify-center w-[642px] h-[702px] mt-12 sm:mt-0">
+  <img src="/Robot.svg" alt="Shills Bot Robot" className="w-[642px] h-[702px]" />
 </div>
       </div>
 
