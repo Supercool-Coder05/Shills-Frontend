@@ -1,142 +1,105 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Consult = () => {
-  const [formData, setFormData] = useState({
-    companyName: "",
-    aboutCompany: "",
-    productDoc: null,
-    helpMessage: "",
-  });
-
-  const fileInputRef = useRef(null);
-  const navigate = useNavigate();
-
-  // Handle input changes for text fields
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  // Handle file input changes
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      console.log("File selected:", file.name);
+    const [formData, setFormData] = useState({
+      email: "",
+      about_company: "",
+      how_we_help: "",
+      product_upload:"",
+    });
+    const [selectedFile, setSelectedFile] = useState(null);
+    const fileInputRef = useRef(null);
+    const navigate = useNavigate();
+  
+    const handleChange = (e) => {
+      const { name, value } = e.target;
       setFormData((prevData) => ({
         ...prevData,
-        productDoc: file,
+        [name]: value,
       }));
-    }
-  };
-
-  const handleUploadClick = () => {
-    console.log("Opening file selector...");
-    fileInputRef.current && fileInputRef.current.click();
-  };
-
-  const handleRemoveFile = () => {
-    console.log("Removing selected file...");
-    setFormData((prevData) => ({
-      ...prevData,
-      productDoc: null,
-    }));
-    if (fileInputRef.current) {
+    };
+  
+    const handleFileChange = (event) => {
+      const file = event.target.files[0];
+      setSelectedFile(file);
+    };
+  
+    const handleUploadClick = () => {
+      fileInputRef.current && fileInputRef.current.click();
+    };
+  
+    const handleRemoveFile = () => {
+      setSelectedFile(null);
       fileInputRef.current.value = null;
-    }
+    };
+  
+    const handleConsult = async (e) => {
+      e.preventDefault();
+  
+      if (!formData.email || !formData.about_company || !formData.how_we_help) {
+          toast.error("Please fill out all required fields.");
+          return;
+      }
+  
+      if (!selectedFile) {
+          toast.error("Please upload a product document.");
+          return;
+      }
+  
+      const apiFormData = new FormData();
+      apiFormData.append("email", formData.email.trim());
+      apiFormData.append("aboutCompany", formData.about_company.trim());
+      apiFormData.append("howWeHelp", formData.how_we_help.trim());
+      apiFormData.append("product_upload", selectedFile);
+  
+      console.log("FormData being sent:");
+      for (let pair of apiFormData.entries()) {
+          console.log(`${pair[0]}: ${pair[1]}`);
+      }
+  
+      try {
+          const response = await axios.post(
+              "http://54.146.185.76:8000/api/users/explore/",
+              apiFormData
+          );
+  
+          if (response.status === 200) {
+              toast.success("Form submitted successfully!");
+              console.log("Form submitted successfully!");
+              navigate("/");
+          } else {
+              toast.error("Failed to submit the form. Please try again.");
+              console.log("Failed to submit the form. Please try again.");
+          }
+      } catch (error) {
+          if (error.response && error.response.data) {
+              console.error("Error response data:", error.response.data);
+              const errorMessage =
+                  error.response.data.message || "An error occurred while submitting.";
+              toast.error(errorMessage);
+              console.log(errorMessage);
+          } else {
+              console.error("Network or server error:", error);
+              toast.error("Network error or server is unreachable.");
+          }
+      }
   };
 
-  const handleConsult = async (e) => {
-    e.preventDefault();
-  
-    console.log("Form submission initiated...");
-  
-    if (!formData.companyName || !formData.aboutCompany || !formData.helpMessage) {
-      console.error("Validation Error: Missing required fields.");
-      toast.error("Please fill out all required fields.");
-      return;
-    }
-  
-    if (!formData.productDoc) {
-      console.error("Validation Error: Missing product document.");
-      toast.error("Please upload a product document.");
-      return;
-    }
-  
-    const apiFormData = new FormData();
-    apiFormData.append("companyName", formData.companyName);
-    apiFormData.append("aboutCompany", formData.aboutCompany);
-    apiFormData.append("productDoc", formData.productDoc);
-    apiFormData.append("helpMessage", formData.helpMessage);
-  
-    console.log("Form data ready for submission:");
-    apiFormData.forEach((value, key) => console.log(`${key}:`, value));
-  
-  
-    try {
-      console.log("Sending API Request...");
-  
-      const response = await axios.post(
-        "http://54.146.185.76:8000/api/users/explore",
-        apiFormData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-  
-      console.log("API Response received:", response);
-  
-      if (response.status === 200) {
-        console.log("Success: Form submitted successfully!");
-        toast.success("Form submitted successfully!", 200);
-        navigate("/");
-      } else {
-        console.error("Unexpected API Response:", response);
-        toast.error("Failed to submit the form. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error during API call:", error);
-  
-      if (error.response) {
-        if (error.response.status === 401) {
-          console.error("Authentication Error: Unauthorized token.");
-          toast.error("Authentication failed. Please check your token.");
-        } else {
-          console.error("Server Error Response:", error.response.data);
-          toast.error(error.response.data?.message || "An error occurred.");
-        }
-      } else {
-        console.error("Network Error: Unable to reach server.");
-        toast.error("Network error or server is unreachable.");
-      }
-    }
-  };
-  
-  
-  
   return (
     <div className="relative h-screen w-screen bg-gray-50 flex flex-col overflow-hidden">
-      {/* Toast Container */}
       <ToastContainer />
 
-      {/* Wavy Image */}
       <img
         src="/wavy.svg"
         alt="Wavy Design"
         className="absolute w-screen bottom-0 left-1/2 transform -translate-x-1/2 hidden md:block"
       />
 
-      {/* Main Content */}
       <div className="relative z-10 flex flex-col h-full">
-        {/* Header */}
         <header className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 bg-[#F4F4F4] shadow">
           <div className="flex flex-row items-center gap-4 md:gap-6">
             <img
@@ -148,9 +111,7 @@ const Consult = () => {
           </div>
         </header>
 
-        {/* Main Content */}
         <div className="flex flex-1 flex-col-reverse md:flex-row">
-          {/* Left Section */}
           <div className="hidden md:flex flex-1 items-center justify-center">
             <img
               src="/illustration.svg"
@@ -159,7 +120,6 @@ const Consult = () => {
             />
           </div>
 
-          {/* Right Section */}
           <div className="flex-1 flex items-center justify-center px-4 md:px-0">
             <form
               className="bg-white p-4 md:p-6 rounded-lg shadow-lg w-full max-w-md space-y-4"
@@ -169,30 +129,28 @@ const Consult = () => {
                 Welcome to Shills Bot!
               </h2>
 
-              {/* Company Name */}
               <div>
                 <label className="block mb-1 md:mb-2 text-sm font-medium text-gray-600">
-                  Company Name
+                  Email
                 </label>
                 <input
                   type="text"
-                  name="companyName"
-                  value={formData.companyName}
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  placeholder="Company Name"
+                  placeholder="Email"
                   className="w-full px-3 py-2 md:px-4 md:py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
 
-              {/* About Company */}
               <div>
                 <label className="block mb-1 md:mb-2 text-sm font-medium text-gray-600">
                   About Company
                 </label>
                 <textarea
-                  name="aboutCompany"
-                  value={formData.aboutCompany}
+                  name="about_company"
+                  value={formData.about_company}
                   onChange={handleChange}
                   placeholder="Describe your company"
                   rows="3"
@@ -201,7 +159,6 @@ const Consult = () => {
                 ></textarea>
               </div>
 
-              {/* File Upload */}
               <div>
                 <label className="block mb-1 md:mb-2 text-sm font-medium text-gray-600">
                   Upload Product Doc/Litepaper
@@ -212,42 +169,38 @@ const Consult = () => {
                     onClick={handleUploadClick}
                     className="flex items-center justify-between px-3 py-2 md:px-4 md:py-2 bg-white border-2 border-black text-black rounded-md hover:bg-gray-400 focus:outline-none w-full"
                   >
-                    {formData.productDoc ? "Change File" : "Upload File"}
-                    <img src="/Upload.svg" alt="Upload" className="ml-2" />
+                    {formData.product_upload ? "Change File" : "Upload File"}
                   </button>
                   <input
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileChange}
                     className="hidden"
-                    required
                   />
-                  {formData.productDoc && (
+                  {selectedFile && (
                     <button
                       type="button"
                       onClick={handleRemoveFile}
-                      className="flex items-center px-3 py-2 text-sm text-white bg-gray-300 rounded-md hover:bg-gray-500 w-full"
+                      className="px-4 py-2 text-sm text-white bg-gray-300 rounded-md hover:bg-gray-500"
                     >
                       Remove File
-                      <img src="/Remove.svg" alt="Remove" className="ml-2" />
                     </button>
                   )}
                 </div>
-                {formData.productDoc && (
+                {formData.product_upload && (
                   <p className="mt-1 md:mt-2 text-sm text-gray-600">
-                    Selected file: {formData.productDoc.name}
+                    Selected file: {formData.product_upload}
                   </p>
                 )}
               </div>
 
-              {/* How can we help */}
               <div>
                 <label className="block mb-1 md:mb-2 text-sm font-medium text-gray-600">
                   How can we help you?
                 </label>
                 <textarea
-                  name="helpMessage"
-                  value={formData.helpMessage}
+                  name="how_we_help"
+                  value={formData.how_we_help}
                   onChange={handleChange}
                   placeholder="Describe your motive here."
                   rows="3"
@@ -256,8 +209,8 @@ const Consult = () => {
                 ></textarea>
               </div>
 
-              {/* Submit Button */}
               <button
+              onClick={handleConsult}
                 type="submit"
                 className="w-full px-4 py-2 text-white bg-black rounded-md hover:bg-gray-800"
               >

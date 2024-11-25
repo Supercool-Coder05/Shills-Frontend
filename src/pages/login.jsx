@@ -43,7 +43,7 @@ const Login = () => {
   
         localStorage.setItem("token", response.data.token);
   
-        setTimeout(() => navigate("/list"), 2000);
+        setTimeout(() => navigate("/list"));
       } else {
         console.log("Login Failed:", response.data.message || "No message provided");
         toast.error(response.data.message || "Login failed!");
@@ -64,7 +64,7 @@ const Login = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen">
       {/* Left Container */}
-      <img src="/chotu.svg" alt="Shills Bot Robot" className="w-full h-full shrink-0 sm:hidden" />
+      <img src="/chotu.jpg" alt="Shills Bot Robot" className="w-auto h-auto sm:hidden" />
 
       <div
         style={{
@@ -87,7 +87,7 @@ const Login = () => {
 
       {/* Right Container */}
       <div className="flex flex-col justify-center items-center w-full md:w-1/2 bg-white px-6 md:px-0">
-        <div className="w-full max-w-md -mt-36 sm:mt-0">
+        <div className="w-full max-w-md sm:mt-0">
           <h2 className="text-xl md:text-2xl font-semibold text-gray-80 mb-6 text-center">
             Login to your account
           </h2>

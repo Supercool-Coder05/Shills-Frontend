@@ -25,6 +25,7 @@ const Support = () => {
     event.preventDefault();
 
     if (!selectedFile) {
+      console.log("Please upload a file before submitting.");
       toast.error("Please upload a file before submitting.");
       return;
     }
@@ -32,63 +33,44 @@ const Support = () => {
     const username = event.target.username.value.trim();
     const message = event.target.message.value.trim();
     if (!username || !message) {
+      console.log("Please fill out all fields before submitting.");
       toast.error("Please fill out all fields before submitting.");
       return;
     }
-
-const token ="b1723688be5b2abe00911c15dc95cef27e59634a"
-
-console.log("Retrieved Token:", token);
-
-if (!token) {
-  toast.error("You are not authenticated. Please log in first.");
-  return;
-} else {
-  toast.success("Authentication successful! Token is present.");
-}
-
-    console.log("Token being used:", token);
 
     const formData = new FormData();
     formData.append("username", username);
     formData.append("query", message);
     formData.append("file_upload", selectedFile);
 
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
-
     try {
       const response = await axios.post(
-        "http://54.146.185.76:8000/api/users/contact",
+        "http://54.146.185.76:8000/api/users/contact/",
         formData,
         {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          headers: "application/json",
         }
       );
 
       console.log("API Response:", response.data);
-      toast.success("Your message has been submitted!");
-
-      event.target.reset();
-      if (fileInputRef.current) {
-        fileInputRef.current.value = null;
+      if (response.status === 200) {
+        console.log("Your message has been submitted!");
+        toast.success("Your message has been submitted!");
+        setTimeout(() => navigate("/list"), 1000);
       }
-      setSelectedFile(null);
     } catch (error) {
       if (error.response) {
         console.error("Error Response:", error.response.data);
         if (error.response.status === 401) {
           toast.error("Authentication failed. Please log in again.");
+          console.log("Authentication failed. Please log in again.");
         } else {
           const errorMessage =
             error.response.data?.detail ||
             error.response.data?.message ||
             "An error occurred.";
           toast.error(errorMessage);
+          console.log(errorMessage);
         }
       } else {
         toast.error("Network error or server is unreachable.");
@@ -96,8 +78,6 @@ if (!token) {
       console.error("Error submitting form:", error);
     }
   };
-  
-  
 
   const handleUploadClick = () => {
     fileInputRef.current && fileInputRef.current.click();
@@ -177,7 +157,7 @@ if (!token) {
               {/* File Upload */}
               <div>
                 <label className="block mb-2 text-sm font-medium text-gray-600">
-                  Upload Product Doc/Litepaper
+                  Upload the error
                 </label>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
                   <button
