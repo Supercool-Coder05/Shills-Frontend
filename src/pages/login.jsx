@@ -10,16 +10,11 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
-  
-    console.log("Username:", username);
-    console.log("Password:", password);
-  
+
     try {
-      console.log("Sending API request to http://54.146.185.76:8000/api/users/login");
-  
       const response = await axios.post(
         "http://54.146.185.76:8000/api/users/login/",
         {
@@ -29,60 +24,51 @@ const Login = () => {
         {
           headers: {
             "Content-Type": "application/json",
-          
           },
         }
       );
-  
-      console.log("API Response:", response);
-  
+
       if (response.status === 200) {
-        console.log("Login Successful, Token:", response.data.token);
-  
         toast.success("Login successful!");
-  
         localStorage.setItem("token", response.data.token);
-  
-        setTimeout(() => navigate("/list"));
+        setTimeout(() => navigate("/list"), 1000);
       } else {
-        console.log("Login Failed:", response.data.message || "No message provided");
         toast.error(response.data.message || "Login failed!");
       }
     } catch (error) {
-      console.error("Error during login:", error);
-  
-      if (error.response) {
-        console.error("Error Response Data:", error.response.data);
-      }
-  
       const errorMessage =
         error.response?.data?.message || "Username or Password is invalid";
       toast.error(errorMessage);
     }
   };
-  
-  return (
-    <div className="flex flex-col md:flex-row h-screen">
-      {/* Left Container */}
-      <img src="/chotu.jpg" alt="Shills Bot Robot" className="w-auto h-auto sm:hidden" />
 
+  return (
+    <div className="flex flex-col md:flex-row md:gap-10 h-screen mb-4 sm:mb-0">
+      {/* Left Container */}
+      <img
+            src="/chotu.jpg"
+            alt="Shills Bot Logo"
+            className="w-full h-full sm:hidden"
+          />
       <div
         style={{
-          background: `linear-gradient(180deg, #3A76FF 5.23%, #173997 95%), linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))`,
+          background:
+            "linear-gradient(180deg, #3A76FF 5.23%, #173997 95%), linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2))",
         }}
-        className="hiddden sm:flex flex-col w-full md:w-1/2 justify-center items-center text-white"
+        className="hidden sm:flex flex-col w-full md:w-1/2 justify-center items-center text-white"
       >
-        <div className="flex flex-row items-center justify-center -mb-10 gap-6 hidden sm:flex">
+        <div className="flex flex-row items-center justify-center -mb-10 gap-6">
           <img
             src="/shillsbotlogo.svg"
             alt="Shills Bot Logo"
-            className="w-10"
+            className="w-10 hidden sm:flex"
           />
+        
           <h1 className="text-3xl font-bold hidden sm:flex">Shills Bot</h1>
         </div>
         <div className="hidden sm:flex items-center justify-center w-[642px] h-[702px] mt-12 sm:mt-0">
-  <img src="/Robot.svg" alt="Shills Bot Robot" className="w-[642px] h-[702px]" />
-</div>
+          <img src="/Robot.svg" alt="Shills Bot Robot" className="w-[642px] h-[702px]" />
+        </div>
       </div>
 
       {/* Right Container */}

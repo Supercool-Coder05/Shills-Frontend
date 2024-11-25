@@ -1,92 +1,78 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Consult = () => {
-    const [formData, setFormData] = useState({
-      email: "",
-      about_company: "",
-      how_we_help: "",
-      product_upload:"",
-    });
-    const [selectedFile, setSelectedFile] = useState(null);
-    const fileInputRef = useRef(null);
-    const navigate = useNavigate();
-  
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    };
-  
-    const handleFileChange = (event) => {
-      const file = event.target.files[0];
-      setSelectedFile(file);
-    };
-  
-    const handleUploadClick = () => {
-      fileInputRef.current && fileInputRef.current.click();
-    };
-  
-    const handleRemoveFile = () => {
-      setSelectedFile(null);
-      fileInputRef.current.value = null;
-    };
-  
-    const handleConsult = async (e) => {
-      e.preventDefault();
-  
-      if (!formData.email || !formData.about_company || !formData.how_we_help) {
-          toast.error("Please fill out all required fields.");
-          return;
+  const [formData, setFormData] = useState({
+    email: "",
+    about_company: "",
+    how_we_help: "",
+    product_upload: "",
+  });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current && fileInputRef.current.click();
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    fileInputRef.current.value = null;
+  };
+
+  const handleConsult = async (e) => {
+    e.preventDefault();
+
+    if (!formData.email || !formData.about_company || !formData.how_we_help) {
+      toast.error("Please fill out all required fields.");
+      return;
+    }
+
+    if (!selectedFile) {
+      toast.error("Please upload a product document.");
+      return;
+    }
+
+    const apiFormData = new FormData();
+    apiFormData.append("email", formData.email.trim());
+    apiFormData.append("aboutCompany", formData.about_company.trim());
+    apiFormData.append("howWeHelp", formData.how_we_help.trim());
+    apiFormData.append("product_upload", selectedFile);
+
+    try {
+      const response = await axios.post(
+        "http://54.146.185.76:8000/api/users/explore/",
+        apiFormData
+      );
+
+      if (response.status === 200) {
+        toast.success("Form submitted successfully!");
+        navigate("/");
+      } else {
+        toast.error("Failed to submit the form. Please try again.");
       }
-  
-      if (!selectedFile) {
-          toast.error("Please upload a product document.");
-          return;
-      }
-  
-      const apiFormData = new FormData();
-      apiFormData.append("email", formData.email.trim());
-      apiFormData.append("aboutCompany", formData.about_company.trim());
-      apiFormData.append("howWeHelp", formData.how_we_help.trim());
-      apiFormData.append("product_upload", selectedFile);
-  
-      console.log("FormData being sent:");
-      for (let pair of apiFormData.entries()) {
-          console.log(`${pair[0]}: ${pair[1]}`);
-      }
-  
-      try {
-          const response = await axios.post(
-              "http://54.146.185.76:8000/api/users/explore/",
-              apiFormData
-          );
-  
-          if (response.status === 200) {
-              toast.success("Form submitted successfully!");
-              console.log("Form submitted successfully!");
-              navigate("/");
-          } else {
-              toast.error("Failed to submit the form. Please try again.");
-              console.log("Failed to submit the form. Please try again.");
-          }
-      } catch (error) {
-          if (error.response && error.response.data) {
-              console.error("Error response data:", error.response.data);
-              const errorMessage =
-                  error.response.data.message || "An error occurred while submitting.";
-              toast.error(errorMessage);
-              console.log(errorMessage);
-          } else {
-              console.error("Network or server error:", error);
-              toast.error("Network error or server is unreachable.");
-          }
-      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "An error occurred while submitting.";
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -111,7 +97,7 @@ const Consult = () => {
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col-reverse md:flex-row">
+        <div className="flex flex-1 flex-col-reverse md:flex-row md:gap-10 lg:gap-0">
           <div className="hidden md:flex flex-1 items-center justify-center">
             <img
               src="/illustration.svg"
@@ -210,7 +196,7 @@ const Consult = () => {
               </div>
 
               <button
-              onClick={handleConsult}
+                onClick={handleConsult}
                 type="submit"
                 className="w-full px-4 py-2 text-white bg-black rounded-md hover:bg-gray-800"
               >

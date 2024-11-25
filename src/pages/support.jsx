@@ -25,7 +25,6 @@ const Support = () => {
     event.preventDefault();
 
     if (!selectedFile) {
-      console.log("Please upload a file before submitting.");
       toast.error("Please upload a file before submitting.");
       return;
     }
@@ -33,7 +32,6 @@ const Support = () => {
     const username = event.target.username.value.trim();
     const message = event.target.message.value.trim();
     if (!username || !message) {
-      console.log("Please fill out all fields before submitting.");
       toast.error("Please fill out all fields before submitting.");
       return;
     }
@@ -52,30 +50,20 @@ const Support = () => {
         }
       );
 
-      console.log("API Response:", response.data);
-      if (response.status === 200) {
-        console.log("Your message has been submitted!");
+      if (response.status === 201) {  
         toast.success("Your message has been submitted!");
         setTimeout(() => navigate("/list"), 1000);
       }
     } catch (error) {
       if (error.response) {
-        console.error("Error Response:", error.response.data);
-        if (error.response.status === 401) {
-          toast.error("Authentication failed. Please log in again.");
-          console.log("Authentication failed. Please log in again.");
-        } else {
-          const errorMessage =
-            error.response.data?.detail ||
-            error.response.data?.message ||
-            "An error occurred.";
-          toast.error(errorMessage);
-          console.log(errorMessage);
-        }
+        const errorMessage =
+          error.response.data?.detail ||
+          error.response.data?.message ||
+          "An error occurred.";
+        toast.error(errorMessage);
       } else {
         toast.error("Network error or server is unreachable.");
       }
-      console.error("Error submitting form:", error);
     }
   };
 
@@ -91,7 +79,7 @@ const Support = () => {
   };
 
   return (
-    <div className="relative flex flex-col h-screen bg-gray-50 overflow-hidden">
+    <div className="relative flex flex-col md:gap-10 h-screen bg-gray-50 overflow-hidden">
       <ToastContainer />
       {/* Wavy Image */}
       <img
@@ -120,7 +108,7 @@ const Support = () => {
         </header>
 
         {/* Main Content */}
-        <div className="flex flex-1 flex-col sm:flex-row w-full items-center justify-center mt-6 sm:mt-0">
+        <div className="flex flex-1 flex-col sm:flex-row sm:gap-x-10 w-full items-center justify-center mt-6 sm:mt-0">
           {/* Left Side */}
           <div className="hidden sm:block w-1/2 top-[228px] ml-[126px]">
             <img
@@ -131,7 +119,7 @@ const Support = () => {
           </div>
 
           {/* Right Side */}
-          <div className="w-full sm:w-[636px] sm:mr-[120px] h-auto p-4 sm:p-[32px] bg-white shadow-lg rounded-lg overflow-hidden">
+          <div className="w-full sm:w-[636px] h-auto p-4 sm:p-[32px] bg-white shadow-lg rounded-lg overflow-hidden">
             <h2 className="text-lg sm:text-2xl text-center font-['Glancyr Neue'] text-gray-800 mb-4">
               Contact Us
             </h2>
