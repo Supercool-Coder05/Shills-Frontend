@@ -52,8 +52,8 @@ const Consult = () => {
 
     const apiFormData = new FormData();
     apiFormData.append("email", formData.email.trim());
-    apiFormData.append("aboutCompany", formData.about_company.trim());
-    apiFormData.append("howWeHelp", formData.how_we_help.trim());
+    apiFormData.append("about_company", formData.about_company.trim());
+    apiFormData.append("how_we_help", formData.how_we_help.trim());
     apiFormData.append("product_upload", selectedFile);
 
     try {
@@ -62,9 +62,11 @@ const Consult = () => {
         apiFormData
       );
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         toast.success("Form submitted successfully!");
-        navigate("/");
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       } else {
         toast.error("Failed to submit the form. Please try again.");
       }
