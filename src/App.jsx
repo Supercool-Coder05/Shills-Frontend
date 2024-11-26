@@ -6,18 +6,22 @@ import Consult from './pages/consult';
 import Dashboard from './pages/dashboard';
 import Support from './pages/support';
 import Botlist from './pages/bot';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/consult" element={<Consult />} />
-        <Route path="/list" element={<Botlist />} />  
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/support" element={<Support />} />
-      </Routes>
-    </Router>
+    <>
+      <Toaster position="top-center" />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/consult" element={<Consult />} />
+          <Route path="/list" element={<Botlist />} />  
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/support" element={<Support />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 
