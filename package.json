@@ -13,6 +13,7 @@
     "@heroicons/react": "^2.2.0",
     "axios": "^1.7.7",
     "bottwitter": "file:",
+    "node": "^20.18.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
