@@ -6,7 +6,7 @@ const Botlist = () => {
   const navigate = useNavigate()
   
   const handleNext = (bot) => {
-    toast.success(`Welcome to ${bot.name}!`);
+    toast.success(`Activated! Welcome to ${bot.name} Bot🎮`);
     setTimeout(() => {
       navigate("/dashboard", { state: { botName: bot.name } });
     }, 1500);

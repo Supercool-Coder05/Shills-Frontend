@@ -16,7 +16,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://54.146.185.76:8000/api/users/login/",
+        "https://raiktechnologies.com/users/login/",
         {
           username: username.trim(),
           password: password.trim(),

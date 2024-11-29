@@ -58,7 +58,7 @@ const Consult = () => {
 
     try {
       const response = await axios.post(
-        "http://54.146.185.76:8000/api/users/explore/",
+        "https://raiktechnologies.com/users/explore/",
         apiFormData
       );
 

@@ -13,15 +13,15 @@ const Dashboard = () => {
   const [activeBot, setActiveBot] = useState(null);
   const rowsPerPage = 10;
 
-  // API configurations
+
   const API_CONFIG = {
     SKOR: {
-      search: "http://52.91.5.59:8000/Skorbot/search/",
-      comment: "http://52.91.5.59:8000/Skorbot/comment/"
+      search: "https://raiktechnologies.com/Skorbot/search/",
+      comment: "https://raiktechnologies.com/Skorbot/comment/"
     },
     ADPOD: {
-      search: "http://52.91.5.59:8000/Adpod/search/",
-      comment: "http://52.91.5.59:8000/Adpod/comment/"
+      search: "https://raiktechnologies.com/Adpod/search/",
+      comment: "https://raiktechnologies.com/Adpod/comment/"
     }
   };
 

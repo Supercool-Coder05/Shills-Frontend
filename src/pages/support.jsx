@@ -43,7 +43,7 @@ const Support = () => {
 
     try {
       const response = await axios.post(
-        "http://54.146.185.76:8000/api/users/contact/",
+        "https://raiktechnologies.com/users/contact/",
         formData,
         {
           headers: "application/json",
